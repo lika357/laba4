@@ -1,0 +1,18 @@
+name: Тесты
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Скачать код
+        uses: actions/checkout@v4
+
+      - name: Установить g++ и clang-format
+        run: sudo apt-get install -y build-essential clang-format
+
+      - name: Запуск тестов
+        run: make
