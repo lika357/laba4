@@ -12,7 +12,7 @@ class Button : public Widget
     std::function<void()> onClick;
 
    public:
- Button(const std::string& label) : text(Widget::getDefaultFont())
+    Button(const std::string& label) : text(Widget::getDefaultFont())
     {
         shape.setFillColor(sf::Color::White);
         shape.setOutlineThickness(2);
@@ -22,9 +22,7 @@ class Button : public Widget
         text.setFillColor(sf::Color::Black);
         shape.setSize({200, 50});
     }
-    Button(const std::string& label, 
-           float width, 
-           float height,
+    Button(const std::string& label, float width, float height,
            std::function<void()> callback = nullptr)
         : text(Widget::getDefaultFont())
     {
@@ -34,11 +32,12 @@ class Button : public Widget
         text.setString(label);
         text.setCharacterSize(22);
         text.setFillColor(sf::Color::Black);
-        shape.setSize({width, height}); 
+        shape.setSize({width, height});
         Widget::setSize(width, height);
-        if (callback){
-             onClick = callback;
-        }  
+        if (callback)
+        {
+            onClick = callback;
+        }
     }
 
     void setPosition(float x, float y) override
