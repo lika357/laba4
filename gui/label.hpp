@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#include "config.hpp"
 #include "widget.hpp"
 
 class Label : public Widget
@@ -12,8 +13,8 @@ class Label : public Widget
     Label(const std::string& str) : text(Widget::getDefaultFont())
     {
         text.setString(str);
-        text.setCharacterSize(24);
-        text.setFillColor(sf::Color::Black);
+        text.setCharacterSize(FontSizes::RESULT);
+        text.setFillColor(Colors::RESULT);
     }
 
     void setPosition(float x, float y)
@@ -33,7 +34,8 @@ class Label : public Widget
         window.draw(text);
     }
 
-    void handleEvent(const sf::Event& event) override
+    bool handleEvent(const sf::Event& event) override
     {
+        return false;
     }
 };

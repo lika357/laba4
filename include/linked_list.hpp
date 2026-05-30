@@ -263,4 +263,35 @@ class LinkedList
         }
         return current->value;
     }
+    void PopFront()
+    {
+        if (this->GetLength() == 0)
+        {
+            throw InvalidArgument{};
+        }
+        Node* value = head;
+        head = head->next;
+        delete (value);
+    }
+    T& GetFirstRef()
+    {
+        if (head == nullptr)
+        {
+            throw NullPointer{};
+        }
+        return head->value;
+    }
+    T& GetLastRef()
+    {
+        if (head == nullptr)
+        {
+            throw NullPointer{};
+        }
+        Node* current = head;
+        while (current->next != nullptr)
+        {
+            current = current->next;
+        }
+        return current->value;
+    }
 };

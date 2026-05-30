@@ -145,32 +145,16 @@ class ListSequence : public Sequence<T>
     }
     void PopFront()
     {
-        if (this->GetLength() == 0)
-        {
-            throw InvalidArgument{};
-        }
-        for (size_t i = 0; i < this->GetLength() - 1; i++)
-        {
-            (*this)[i] = (*this)[i + 1];
-        }
-        this->Resize(this->GetLength() - 1);
+        items.PopFront();
     }
 
     T& Back()
     {
-        if (this->GetLength() == 0)
-        {
-            throw InvalidArgument{};
-        }
-        return (*this)[this->GetLength() - 1];
+        return items.GetLastRef();
     }
 
     T& Front()
     {
-        if (this->GetLength() == 0)
-        {
-            throw InvalidArgument{};
-        }
-        return (*this)[0];
+        return items.GetFirstRef();
     }
 };

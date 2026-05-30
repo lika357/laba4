@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 
+#include "config.hpp"
 #include "widget.hpp"
 
 class Button : public Widget
@@ -14,24 +15,26 @@ class Button : public Widget
    public:
     Button(const std::string& label) : text(Widget::getDefaultFont())
     {
-        shape.setFillColor(sf::Color::White);
-        shape.setOutlineThickness(2);
-        shape.setOutlineColor(sf::Color(101, 67, 33));
+        shape.setFillColor(Colors::BUTTON_FILL);
+        shape.setOutlineThickness(Borders::BUTTON_THICKNESS);
+        shape.setOutlineColor(Colors::BUTTON_OUTLINE);
         text.setString(label);
-        text.setCharacterSize(22);
-        text.setFillColor(sf::Color::Black);
-        shape.setSize({200, 50});
+        text.setCharacterSize(FontSizes::BUTTON);
+        text.setFillColor(Colors::BUTTON_TEXT);
+        shape.setSize({ButtonSizes::CHOOSE_W, ButtonSizes::CHOOSE_H});
+        Widget::setSize(ButtonSizes::CHOOSE_W, ButtonSizes::CHOOSE_H);
     }
+
     Button(const std::string& label, float width, float height,
            std::function<void()> callback = nullptr)
         : text(Widget::getDefaultFont())
     {
-        shape.setFillColor(sf::Color::White);
-        shape.setOutlineThickness(2);
-        shape.setOutlineColor(sf::Color(101, 67, 33));
+        shape.setFillColor(Colors::BUTTON_FILL);
+        shape.setOutlineThickness(Borders::BUTTON_THICKNESS);
+        shape.setOutlineColor(Colors::BUTTON_OUTLINE);
         text.setString(label);
-        text.setCharacterSize(22);
-        text.setFillColor(sf::Color::Black);
+        text.setCharacterSize(FontSizes::BUTTON);
+        text.setFillColor(Colors::BUTTON_TEXT);
         shape.setSize({width, height});
         Widget::setSize(width, height);
         if (callback)
@@ -59,21 +62,27 @@ class Button : public Widget
         window.draw(shape);
         window.draw(text);
     }
+
     void setColor(sf::Color fillColor)
     {
         shape.setFillColor(fillColor);
     }
 
-    void handleEvent(const sf::Event& event) override
+    bool handleEvent(const sf::Event& event) override
     {
-        if (!visible || disabled) return;
+        if (!visible || disabled) return false;
         if (auto* mouse = event.getIf<sf::Event::MouseButtonPressed>())
         {
             if (shape.getGlobalBounds().contains(
                     {static_cast<float>(mouse->position.x), static_cast<float>(mouse->position.y)}))
             {
-                if (onClick) onClick();
+                if (onClick)
+                {
+                    onClick();
+                    return true;
+                }
             }
         }
+        return false;
     }
 };
