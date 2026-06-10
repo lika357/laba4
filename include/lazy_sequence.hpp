@@ -163,4 +163,13 @@ class LazySequence
         cache.Prepend(item);
         return this;
     }
+    LazySequence<T>* InsertAt(T item, size_t index)
+    {
+        if (index > cache.GetLength())
+        {
+            throw IndexOutOfRange(index, cache.GetLength());
+        }
+        cache.InsertAt(item, index);
+        return this;
+    }
 };

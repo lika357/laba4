@@ -27,6 +27,7 @@ int main()
     test_lazy_subsequence_infinite();
     test_lazy_append();
     test_lazy_prepend();
+    test_lazy_insert_at();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";

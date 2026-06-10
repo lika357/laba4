@@ -240,3 +240,15 @@ void test_lazy_prepend()
     assert_func(lazy.GetLength().GetValue() == 3);
     assert_func(lazy.GetFirst() == 10);
 }
+void test_lazy_insert_at()
+{
+    int items[] = {10, 30};
+    LazySequence<int> lazy(items, 2);
+
+    lazy.InsertAt(20, 1);
+
+    assert_func(lazy.GetLength().GetValue() == 3);
+    assert_func(lazy.Get(0) == 10);
+    assert_func(lazy.Get(1) == 20);
+    assert_func(lazy.Get(2) == 30);
+}
