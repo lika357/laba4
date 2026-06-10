@@ -10,6 +10,10 @@ int square(int x)
 {
     return x * x;
 }
+bool isEven(int x)
+{
+    return x % 2 == 0;
+}
 
 void test_lazy_empty()
 {
@@ -281,4 +285,16 @@ void test_lazy_map()
     assert_func(squared->Get(2) == 9);
     assert_func(squared->Get(3) == 16);
     assert_func(squared->Get(4) == 25);
+}
+void test_lazy_where()
+{
+    int items[] = {1, 2, 3, 4, 5, 6};
+    LazySequence<int> lazy(items, 6);
+
+    LazySequence<int>* evens = lazy.Where(isEven, 6);
+
+    assert_func(evens->GetLength().GetValue() == 3);
+    assert_func(evens->Get(0) == 2);
+    assert_func(evens->Get(1) == 4);
+    assert_func(evens->Get(2) == 6);
 }

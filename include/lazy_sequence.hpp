@@ -202,4 +202,21 @@ class LazySequence
         }
         return result;
     }
+    LazySequence<T>* Where(bool (*pred)(T), size_t count)
+    {
+        if (pred == nullptr)
+        {
+            throw NullPointer();
+        }
+        LazySequence<T>* result = new LazySequence<T>();
+        for (size_t i = 0; i < count; i++)
+        {
+            T item = this->Get(i);
+            if (pred(item))
+            {
+                result->cache.Append(item);
+            }
+        }
+        return result;
+    }
 };

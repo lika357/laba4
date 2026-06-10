@@ -30,6 +30,7 @@ int main()
     test_lazy_insert_at();
     test_lazy_concat();
     test_lazy_map();
+    test_lazy_where();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";
