@@ -74,36 +74,67 @@ void test_lazy_get_finite()
 {
     int items[] = {10, 20, 30};
     LazySequence<int> lazy(items, 3);
-    
-    assert_func(lazy.Get(0) == 10); 
-    assert_func(lazy.Get(1) == 20); 
-    assert_func(lazy.Get(2) == 30);  
+
+    assert_func(lazy.Get(0) == 10);
+    assert_func(lazy.Get(1) == 20);
+    assert_func(lazy.Get(2) == 30);
 }
 
 void test_lazy_get_infinite()
 {
     int initial[] = {3};
     LazySequence<int> lazy(doubler, initial, 1);
-    
-    assert_func(lazy.Get(0) == 3);   
-    assert_func(lazy.Get(1) == 6);    
-    assert_func(lazy.Get(2) == 12); 
-    assert_func(lazy.Get(3) == 24);  
+
+    assert_func(lazy.Get(0) == 3);
+    assert_func(lazy.Get(1) == 6);
+    assert_func(lazy.Get(2) == 12);
+    assert_func(lazy.Get(3) == 24);
 }
 
 void test_lazy_get_out_of_range()
 {
     int items[] = {1, 2, 3};
     LazySequence<int> lazy(items, 3);
-    
+
     bool caught = false;
     try
     {
-        lazy.Get(5);  
+        lazy.Get(5);
     }
     catch (const IndexOutOfRange&)
     {
         caught = true;
     }
-    assert_func(caught); 
+    assert_func(caught);
+}
+
+void test_lazy_get_first_finite()
+{
+    int items[] = {10, 20, 30};
+    LazySequence<int> lazy(items, 3);
+
+    assert_func(lazy.GetFirst() == 10);
+}
+
+void test_lazy_get_first_infinite()
+{
+    int initial[] = {7};
+    LazySequence<int> lazy(doubler, initial, 1);
+
+    assert_func(lazy.GetFirst() == 7);
+}
+void test_lazy_get_first_empty()
+{
+    LazySequence<int> lazy;
+
+    bool caught = false;
+    try
+    {
+        lazy.GetFirst();
+    }
+    catch (const InvalidArgument&)
+    {
+        caught = true;
+    }
+    assert_func(caught);
 }

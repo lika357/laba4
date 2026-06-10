@@ -10,3 +10,6 @@ void test_size_infinite();
 void test_lazy_get_finite();
 void test_lazy_get_infinite();
 void test_lazy_get_out_of_range();
+void test_lazy_get_first_finite();
+void test_lazy_get_first_infinite();
+void test_lazy_get_first_empty();

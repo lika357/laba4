@@ -12,12 +12,14 @@ class LazySequence
     bool isInfinite;
     void materializeUpTo(size_t index)
     {
-        if (index < cache.GetLength()) {
+        if (index < cache.GetLength())
+        {
             return;
         }
 
-        if (!isInfinite){
-             throw IndexOutOfRange(index, cache.GetLength());
+        if (!isInfinite)
+        {
+            throw IndexOutOfRange(index, cache.GetLength());
         }
 
         for (size_t i = cache.GetLength(); i <= index; i++)
@@ -77,9 +79,10 @@ class LazySequence
         : cache(other.cache), generator(other.generator), isInfinite(other.isInfinite)
     {
     }
-        T& operator[](size_t index)
+    T& operator[](size_t index)
     {
-        if (index >= cache.GetLength()){
+        if (index >= cache.GetLength())
+        {
             materializeUpTo(index);
         }
         return cache[index];
@@ -96,10 +99,17 @@ class LazySequence
             return Size(cache.GetLength());
         }
     }
-        T Get(size_t index)
+    T Get(size_t index)
     {
-        if (index >= cache.GetLength())
-            materializeUpTo(index);
+        if (index >= cache.GetLength()) materializeUpTo(index);
         return cache[index];
+    }
+    T GetFirst()
+    {
+        if (cache.GetLength() == 0)
+        {
+            throw InvalidArgument();
+        }
+        return cache[0];
     }
 };
