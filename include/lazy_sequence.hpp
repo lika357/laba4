@@ -219,4 +219,18 @@ class LazySequence
         }
         return result;
     }
+    template <typename U>
+    U Reduce(U (*func)(U, T), U initial, size_t count)
+    {
+        if (func == nullptr)
+        {
+            throw NullPointer();
+        }
+        U result = initial;
+        for (size_t i = 0; i < count; i++)
+        {
+            result = func(result, this->Get(i));
+        }
+        return result;
+    }
 };

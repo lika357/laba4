@@ -31,6 +31,7 @@ int main()
     test_lazy_concat();
     test_lazy_map();
     test_lazy_where();
+    test_lazy_reduce();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";

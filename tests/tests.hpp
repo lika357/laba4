@@ -26,3 +26,4 @@ void test_lazy_insert_at();
 void test_lazy_concat();
 void test_lazy_map();
 void test_lazy_where();
+void test_lazy_reduce();

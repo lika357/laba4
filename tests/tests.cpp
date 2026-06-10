@@ -14,6 +14,10 @@ bool isEven(int x)
 {
     return x % 2 == 0;
 }
+int sum(int y, int x)
+{
+    return y + x;
+}
 
 void test_lazy_empty()
 {
@@ -297,4 +301,12 @@ void test_lazy_where()
     assert_func(evens->Get(0) == 2);
     assert_func(evens->Get(1) == 4);
     assert_func(evens->Get(2) == 6);
+}
+void test_lazy_reduce()
+{
+    int items[] = {1, 2, 3, 4, 5};
+    LazySequence<int> lazy(items, 5);
+
+    int result = lazy.Reduce(sum, 0, 5);
+    assert_func(result == 15);
 }
