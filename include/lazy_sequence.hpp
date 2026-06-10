@@ -1,28 +1,25 @@
 #pragma once
-#include "concepts.hpp"
+#include "array_sequence.hpp"
 #include "size.hpp"
 #include "exceptions.hpp"
-#include <functional>
 
-template <template <typename> class Container, typename T>
-    requires SequenceContainer<Container<T>>
+template <typename T>
 class LazySequence
 {
    private:
-    Container<T> cache;
-    std::function<T(const Container<T>&)> generator;
-    bool isInfinite;
+    ArraySequence<T> cache;                        
+    T (*generator)(const ArraySequence<T>&);        
+    bool isInfinite;                                 
 
    public:
-    LazySequence() : isInfinite(false) {}
+  
+    LazySequence() : generator(nullptr), isInfinite(false) {}
 
     Size GetLength() const
     {
-        if (isInfinite){
+        if (isInfinite)
             return Size::Infinite();
-        }
-        else{
+        else
             return Size(cache.GetLength());
-        }
     }
 };
