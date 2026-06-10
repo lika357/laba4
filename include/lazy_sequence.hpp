@@ -149,4 +149,13 @@ class LazySequence
         }
         return result;
     }
+    LazySequence<T>* Append(T item)
+    {
+        if (isInfinite)
+        {
+            throw InvalidArgument();
+        }
+        cache.Append(item);
+        return this;
+    }
 };

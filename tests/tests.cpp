@@ -220,3 +220,13 @@ void test_lazy_subsequence_infinite()
     assert_func(sub->Get(1) == 24);
     assert_func(sub->Get(2) == 48);
 }
+void test_lazy_append()
+{
+    int items[] = {10, 20};
+    LazySequence<int> lazy(items, 2);
+
+    lazy.Append(30);
+
+    assert_func(lazy.GetLength().GetValue() == 3);
+    assert_func(lazy.GetLast() == 30);
+}

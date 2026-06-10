@@ -25,6 +25,7 @@ int main()
     test_lazy_materialized_count_infinite();
     test_lazy_subsequence_finite();
     test_lazy_subsequence_infinite();
+    test_lazy_append();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";
