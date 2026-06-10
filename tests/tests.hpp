@@ -7,3 +7,6 @@ void test_lazy_with_generator();
 void test_lazy_copy();
 void test_size_finite();
 void test_size_infinite();
+void test_lazy_get_finite();
+void test_lazy_get_infinite();
+void test_lazy_get_out_of_range();
