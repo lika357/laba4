@@ -12,12 +12,12 @@ const sf::Color INPUT_TEXT = sf::Color::Black;
 const sf::Color HINT = sf::Color(120, 70, 70);
 const sf::Color RESULT = sf::Color::Black;
 const sf::Color ELEMENT = sf::Color(173, 216, 230);
-}  // namespace Colors
+}  
 namespace Window
 {
 constexpr float WIDTH = 1200.0f;
 constexpr float HEIGHT = 900.0f;
-}  // namespace Window
+} 
 
 namespace ButtonSizes
 {
@@ -35,7 +35,7 @@ constexpr float DEQUE_H = 50.0f;
 
 constexpr float ELEMENT_W = 80.0f;
 constexpr float ELEMENT_H = 80.0f;
-}  // namespace ButtonSizes
+}  
 
 namespace FontSizes
 {
@@ -44,7 +44,7 @@ constexpr unsigned int BUTTON = 22;
 constexpr unsigned int INPUT = 28;
 constexpr unsigned int RESULT = 24;
 constexpr unsigned int HINT = 20;
-}  // namespace FontSizes
+}  
 
 namespace Borders
 {
@@ -65,7 +65,7 @@ constexpr float FUNC_GAP = 10.0f;
 
 constexpr float ELEM_Y = 280.0f;
 constexpr float ELEM_GAP = 15.0f;
-}  // namespace LayoutPositions
+}  
 
 namespace ElementPositions
 {
@@ -77,4 +77,4 @@ constexpr float INPUT_Y = 150.0f;
 
 constexpr float RESULT_X = 50.0f;
 constexpr float RESULT_Y = 150.0f;
-}  // namespace ElementPositions
+} 
