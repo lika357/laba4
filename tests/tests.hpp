@@ -23,3 +23,4 @@ void test_lazy_subsequence_infinite();
 void test_lazy_append();
 void test_lazy_prepend();
 void test_lazy_insert_at();
+void test_lazy_concat();

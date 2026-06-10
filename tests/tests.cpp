@@ -252,3 +252,16 @@ void test_lazy_insert_at()
     assert_func(lazy.Get(1) == 20);
     assert_func(lazy.Get(2) == 30);
 }
+void test_lazy_concat()
+{
+    int items1[] = {1, 2};
+    int items2[] = {3, 4};
+    LazySequence<int> lazy1(items1, 2);
+    LazySequence<int> lazy2(items2, 2);
+
+    lazy1.Concat(&lazy2);
+
+    assert_func(lazy1.GetLength().GetValue() == 4);
+    assert_func(lazy1.Get(0) == 1);
+    assert_func(lazy1.Get(3) == 4);
+}

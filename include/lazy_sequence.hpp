@@ -172,4 +172,20 @@ class LazySequence
         cache.InsertAt(item, index);
         return this;
     }
+    LazySequence<T>* Concat(LazySequence<T>* other)
+    {
+        if (other == nullptr)
+        {
+            throw NullPointer();
+        }
+        if (isInfinite)
+        {
+            throw InvalidArgument();
+        }
+        for (size_t i = 0; i < other->cache.GetLength(); i++)
+        {
+            cache.Append(other->cache[i]);
+        }
+        return this;
+    }
 };
