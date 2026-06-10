@@ -21,6 +21,8 @@ int main()
     test_lazy_get_last_finite();
     test_lazy_get_last_infinite();
     test_lazy_get_last_empty();
+    test_lazy_materialized_count_finite();
+    test_lazy_materialized_count_infinite();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";

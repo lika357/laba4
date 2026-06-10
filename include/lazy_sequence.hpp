@@ -124,4 +124,9 @@ class LazySequence
         }
         return cache[cache.GetLength() - 1];
     }
+
+    size_t GetMaterializedCount() const
+    {
+        return cache.GetLength();
+    }
 };

@@ -178,3 +178,21 @@ void test_lazy_get_last_empty()
     }
     assert_func(caught);
 }
+
+void test_lazy_materialized_count_finite()
+{
+    int items[] = {5, 10, 15};
+    LazySequence<int> lazy(items, 3);
+
+    assert_func(lazy.GetMaterializedCount() == 3);
+}
+
+void test_lazy_materialized_count_infinite()
+{
+    int initial[] = {7};
+    LazySequence<int> lazy(doubler, initial, 1);
+
+    assert_func(lazy.GetMaterializedCount() == 1);
+    lazy.Get(2);
+    assert_func(lazy.GetMaterializedCount() == 3);
+}
