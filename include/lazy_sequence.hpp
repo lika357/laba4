@@ -188,4 +188,18 @@ class LazySequence
         }
         return this;
     }
+    template <typename U>
+    LazySequence<U>* Map(U (*func)(T), size_t count)
+    {
+        if (func == nullptr)
+        {
+            throw NullPointer();
+        }
+        LazySequence<U>* result = new LazySequence<U>();
+        for (size_t i = 0; i < count; i++)
+        {
+            result->cache.Append(func(this->Get(i)));
+        }
+        return result;
+    }
 };

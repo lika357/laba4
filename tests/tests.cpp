@@ -6,6 +6,10 @@ int doubler(const ArraySequence<int>& cache)
 {
     return cache.GetLast() * 2;
 }
+int square(int x)
+{
+    return x * x;
+}
 
 void test_lazy_empty()
 {
@@ -264,4 +268,17 @@ void test_lazy_concat()
     assert_func(lazy1.GetLength().GetValue() == 4);
     assert_func(lazy1.Get(0) == 1);
     assert_func(lazy1.Get(3) == 4);
+}
+void test_lazy_map()
+{
+    int items[] = {1, 2, 3, 4, 5};
+    LazySequence<int> lazy(items, 5);
+
+    LazySequence<int>* squared = lazy.Map(square, 5);
+
+    assert_func(squared->Get(0) == 1);
+    assert_func(squared->Get(1) == 4);
+    assert_func(squared->Get(2) == 9);
+    assert_func(squared->Get(3) == 16);
+    assert_func(squared->Get(4) == 25);
 }

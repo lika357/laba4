@@ -29,6 +29,7 @@ int main()
     test_lazy_prepend();
     test_lazy_insert_at();
     test_lazy_concat();
+    test_lazy_map();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";
