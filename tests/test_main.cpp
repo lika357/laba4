@@ -32,6 +32,10 @@ int main()
     test_lazy_map();
     test_lazy_where();
     test_lazy_reduce();
+    test_stream_read_finite();
+    test_stream_read_infinite();
+    test_stream_seek();
+    test_stream_close();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";

@@ -27,3 +27,7 @@ void test_lazy_concat();
 void test_lazy_map();
 void test_lazy_where();
 void test_lazy_reduce();
+void test_stream_read_finite();
+void test_stream_read_infinite();
+void test_stream_seek();
+void test_stream_close();

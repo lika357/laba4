@@ -1,6 +1,7 @@
 #include "assert.hpp"
 #include "lazy_sequence.hpp"
 #include "size.hpp"
+#include "stream.hpp"
 
 int doubler(const ArraySequence<int>& cache)
 {
@@ -309,4 +310,57 @@ void test_lazy_reduce()
 
     int result = lazy.Reduce(sum, 0, 5);
     assert_func(result == 15);
+}
+
+void test_stream_read_finite()
+{
+    int items[] = {10, 20, 30};
+    LazySequence<int> lazy(items, 3);
+    ReadOnlyStream<int> stream(lazy);
+
+    assert_func(!stream.IsEndOfStream());
+    assert_func(stream.Read() == 10);
+    assert_func(stream.GetPosition() == 1);
+
+    assert_func(stream.Read() == 20);
+    assert_func(stream.Read() == 30);
+    assert_func(stream.IsEndOfStream());
+}
+
+void test_stream_read_infinite()
+{
+    int initial[] = {3};
+    LazySequence<int> lazy(doubler, initial, 1);
+    ReadOnlyStream<int> stream(lazy);
+
+    assert_func(!stream.IsEndOfStream());
+    assert_func(stream.Read() == 3);
+    assert_func(stream.Read() == 6);
+    assert_func(stream.Read() == 12);
+    assert_func(!stream.IsEndOfStream());
+}
+
+void test_stream_seek()
+{
+    int items[] = {1, 2, 3, 4, 5};
+    LazySequence<int> lazy(items, 5);
+    ReadOnlyStream<int> stream(lazy);
+
+    stream.Seek(3);
+    assert_func(stream.GetPosition() == 3);
+    assert_func(stream.Read() == 4);
+}
+
+void test_stream_close()
+{
+    int items[] = {10, 20, 30};
+    LazySequence<int> lazy(items, 3);
+    ReadOnlyStream<int> stream(lazy);
+
+    stream.Read();
+    stream.Read();
+    stream.Close();
+
+    assert_func(stream.GetPosition() == 0);
+    assert_func(stream.Read() == 10);
 }
