@@ -21,3 +21,4 @@ void test_lazy_materialized_count_infinite();
 void test_lazy_subsequence_finite();
 void test_lazy_subsequence_infinite();
 void test_lazy_append();
+void test_lazy_prepend();

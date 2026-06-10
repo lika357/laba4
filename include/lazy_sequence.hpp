@@ -158,4 +158,9 @@ class LazySequence
         cache.Append(item);
         return this;
     }
+    LazySequence<T>* Prepend(T item)
+    {
+        cache.Prepend(item);
+        return this;
+    }
 };
