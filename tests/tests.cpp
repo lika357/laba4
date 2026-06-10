@@ -196,3 +196,27 @@ void test_lazy_materialized_count_infinite()
     lazy.Get(2);
     assert_func(lazy.GetMaterializedCount() == 3);
 }
+
+void test_lazy_subsequence_finite()
+{
+    int items[] = {10, 20, 30, 40, 50};
+    LazySequence<int> lazy(items, 5);
+
+    LazySequence<int>* sub = lazy.GetSubsequence(1, 3);
+    assert_func(sub->GetLength().GetValue() == 3);
+    assert_func(sub->Get(0) == 20);
+    assert_func(sub->Get(1) == 30);
+    assert_func(sub->Get(2) == 40);
+}
+
+void test_lazy_subsequence_infinite()
+{
+    int initial[] = {3};
+    LazySequence<int> lazy(doubler, initial, 1);
+
+    LazySequence<int>* sub = lazy.GetSubsequence(2, 4);
+    assert_func(sub->GetLength().GetValue() == 3);
+    assert_func(sub->Get(0) == 12);
+    assert_func(sub->Get(1) == 24);
+    assert_func(sub->Get(2) == 48);
+}

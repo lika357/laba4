@@ -18,3 +18,5 @@ void test_lazy_get_last_infinite();
 void test_lazy_get_last_empty();
 void test_lazy_materialized_count_finite();
 void test_lazy_materialized_count_infinite();
+void test_lazy_subsequence_finite();
+void test_lazy_subsequence_infinite();

@@ -129,4 +129,24 @@ class LazySequence
     {
         return cache.GetLength();
     }
+
+    LazySequence<T>* GetSubsequence(size_t startIndex, size_t endIndex)
+    {
+        if (startIndex > endIndex)
+        {
+            throw InvalidArgument();
+        }
+        if (!isInfinite && endIndex >= cache.GetLength())
+        {
+            throw IndexOutOfRange(endIndex, cache.GetLength());
+        }
+        materializeUpTo(endIndex);
+
+        LazySequence<T>* result = new LazySequence<T>();
+        for (size_t i = startIndex; i <= endIndex; i++)
+        {
+            result->cache.Append(cache[i]);
+        }
+        return result;
+    }
 };
