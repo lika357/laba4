@@ -138,3 +138,43 @@ void test_lazy_get_first_empty()
     }
     assert_func(caught);
 }
+void test_lazy_get_last_finite()
+{
+    int items[] = {10, 20, 30};
+    LazySequence<int> lazy(items, 3);
+
+    assert_func(lazy.GetLast() == 30);
+}
+
+void test_lazy_get_last_infinite()
+{
+    int initial[] = {5};
+    LazySequence<int> lazy(doubler, initial, 1);
+
+    bool caught = false;
+    try
+    {
+        lazy.GetLast();
+    }
+    catch (const InvalidArgument&)
+    {
+        caught = true;
+    }
+    assert_func(caught);
+}
+
+void test_lazy_get_last_empty()
+{
+    LazySequence<int> lazy;
+
+    bool caught = false;
+    try
+    {
+        lazy.GetLast();
+    }
+    catch (const InvalidArgument&)
+    {
+        caught = true;
+    }
+    assert_func(caught);
+}

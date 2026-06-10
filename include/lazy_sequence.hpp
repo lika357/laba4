@@ -112,4 +112,16 @@ class LazySequence
         }
         return cache[0];
     }
+    T GetLast()
+    {
+        if (isInfinite)
+        {
+            throw InvalidArgument();
+        }
+        if (cache.GetLength() == 0)
+        {
+            throw InvalidArgument();
+        }
+        return cache[cache.GetLength() - 1];
+    }
 };

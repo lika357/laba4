@@ -18,6 +18,9 @@ int main()
     test_lazy_get_first_finite();
     test_lazy_get_first_infinite();
     test_lazy_get_first_empty();
+    test_lazy_get_last_finite();
+    test_lazy_get_last_infinite();
+    test_lazy_get_last_empty();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";
