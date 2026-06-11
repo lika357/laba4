@@ -31,3 +31,4 @@ void test_stream_read_finite();
 void test_stream_read_infinite();
 void test_stream_seek();
 void test_stream_close();
+void test_write_stream();

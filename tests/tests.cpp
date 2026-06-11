@@ -364,3 +364,17 @@ void test_stream_close()
     assert_func(stream.GetPosition() == 0);
     assert_func(stream.Read() == 10);
 }
+void test_write_stream()
+{
+    int items[] = {10, 20};
+    LazySequence<int> lazy(items, 2);
+    WriteOnlyStream<int> stream(lazy);
+
+    stream.Write(30);
+    stream.Write(40);
+
+    assert_func(stream.GetPosition() == 2);
+    assert_func(lazy.GetLength().GetValue() == 4);
+    assert_func(lazy.Get(2) == 30);
+    assert_func(lazy.Get(3) == 40);
+}

@@ -67,3 +67,36 @@ class ReadOnlyStream
         position = 0;
     }
 };
+
+template <typename T>
+class WriteOnlyStream
+{
+   private:
+    LazySequence<T>& target;
+    size_t position;
+
+   public:
+    WriteOnlyStream(LazySequence<T>& lazySeq) : target(lazySeq), position(0)
+    {
+    }
+
+    size_t GetPosition() const
+    {
+        return position;
+    }
+
+    size_t Write(T item)
+    {
+        target.Append(item);
+        position++;
+        return position;
+    }
+
+    void Open()
+    {
+    }
+    void Close()
+    {
+        position = 0;
+    }
+};
