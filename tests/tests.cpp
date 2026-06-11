@@ -1,4 +1,5 @@
 #include "assert.hpp"
+#include "generators.hpp"
 #include "lazy_sequence.hpp"
 #include "size.hpp"
 #include "stream.hpp"
@@ -377,4 +378,50 @@ void test_write_stream()
     assert_func(lazy.GetLength().GetValue() == 4);
     assert_func(lazy.Get(2) == 30);
     assert_func(lazy.Get(3) == 40);
+}
+
+void test_fibonacci()
+{
+    int initial[] = {1, 1};
+    LazySequence<int> fib(fibGenerator, initial, 2);
+
+    assert_func(fib.Get(0) == 1);
+    assert_func(fib.Get(1) == 1);
+    assert_func(fib.Get(5) == 8);
+    assert_func(fib.Get(9) == 55);
+    assert_func(fib.GetLength().IsInfinite());
+}
+
+void test_squares()
+{
+    int initial[] = {1};
+    LazySequence<int> squares(squareGenerator, initial, 1);
+
+    assert_func(squares.Get(0) == 1);
+    assert_func(squares.Get(1) == 4);
+    assert_func(squares.Get(4) == 25);
+    assert_func(squares.GetLength().IsInfinite());
+}
+
+void test_doubler()
+{
+    int initial[] = {1};
+    LazySequence<int> doubler(doubleGenerator, initial, 1);
+
+    assert_func(doubler.Get(0) == 1);
+    assert_func(doubler.Get(1) == 2);
+    assert_func(doubler.Get(3) == 8);
+    assert_func(doubler.GetLength().IsInfinite());
+}
+
+void test_factorial()
+{
+    int initial[] = {1};
+    LazySequence<int> fact(factorialGenerator, initial, 1);
+
+    assert_func(fact.Get(0) == 1);
+    assert_func(fact.Get(1) == 2);
+    assert_func(fact.Get(2) == 6);
+    assert_func(fact.Get(3) == 24);
+    assert_func(fact.GetLength().IsInfinite());
 }

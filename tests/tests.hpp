@@ -32,3 +32,7 @@ void test_stream_read_infinite();
 void test_stream_seek();
 void test_stream_close();
 void test_write_stream();
+void test_fibonacci();
+void test_squares();
+void test_doubler();
+void test_factorial();

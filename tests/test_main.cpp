@@ -37,6 +37,10 @@ int main()
     test_stream_seek();
     test_stream_close();
     test_write_stream();
+    test_fibonacci();
+    test_squares();
+    test_doubler();
+    test_factorial();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";
