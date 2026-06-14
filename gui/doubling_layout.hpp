@@ -6,7 +6,7 @@
 
 class DoublingLayout : public VerticalLayout
 {
-public:
+   public:
     HorizontalLayout buttons{LayoutPositions::WORK_X, LayoutPositions::FUNC_Y,
                              LayoutPositions::FUNC_GAP};
     Button dbGenerate{"GENERATE N", ButtonSizes::STACK_W, ButtonSizes::STACK_H};

@@ -93,8 +93,36 @@ class Edit : public Widget
             }
             else if ((t->unicode >= '0' && t->unicode <= '9') || t->unicode == '-')
             {
-                input += static_cast<char>(t->unicode);
-                handled = true;
+                std::string newChar;
+                newChar += static_cast<char>(t->unicode);
+                std::string newInput = input + newChar;
+
+                bool ok = true;
+
+                if (newInput.length() > 5)
+                {
+                    ok = false;
+                }
+
+                if (t->unicode == '-' && input.length() > 0)
+                {
+                    ok = false;
+                }
+
+                if (ok && newInput != "-")
+                {
+                    int val = std::stoi(newInput);
+                    if (val < -999 || val > 9999)
+                    {
+                        ok = false;
+                    }
+                }
+
+                if (ok)
+                {
+                    input = newInput;
+                    handled = true;
+                }
             }
         }
 

@@ -6,7 +6,7 @@
 
 class SquaresLayout : public VerticalLayout
 {
-public:
+   public:
     HorizontalLayout buttons{LayoutPositions::WORK_X, LayoutPositions::FUNC_Y,
                              LayoutPositions::FUNC_GAP};
     Button sqGenerate{"GENERATE N", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
