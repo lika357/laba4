@@ -1,6 +1,7 @@
 #pragma once
-#include "array_sequence.hpp"
 #include "exceptions.hpp"
+#include "igenerator.hpp"
+#include "sequence.hpp"
 #include "size.hpp"
 
 template <typename T>
@@ -8,8 +9,9 @@ class LazySequence
 {
    private:
     ArraySequence<T> cache;
-    T (*generator)(const ArraySequence<T>&);
+    IGenerator<T>* generator;
     bool isInfinite;
+
     void materializeUpTo(size_t index)
     {
         if (index < cache.GetLength())
@@ -24,7 +26,7 @@ class LazySequence
 
         for (size_t i = cache.GetLength(); i <= index; i++)
         {
-            T next = generator(cache);
+            T next = generator->GetNext(cache);
             cache.Append(next);
         }
     }
@@ -57,8 +59,7 @@ class LazySequence
             cache.Append(seq->Get(i));
         }
     }
-
-    LazySequence(T (*gen)(const ArraySequence<T>&), T* initialItems, size_t initialCount)
+    LazySequence(IGenerator<T>* gen, T* initialItems, size_t initialCount)
         : generator(gen), isInfinite(true)
     {
         if (initialItems == nullptr)
@@ -79,6 +80,7 @@ class LazySequence
         : cache(other.cache), generator(other.generator), isInfinite(other.isInfinite)
     {
     }
+
     T& operator[](size_t index)
     {
         if (index >= cache.GetLength())
@@ -99,11 +101,13 @@ class LazySequence
             return Size(cache.GetLength());
         }
     }
+
     T Get(size_t index)
     {
         if (index >= cache.GetLength()) materializeUpTo(index);
         return cache[index];
     }
+
     T GetFirst()
     {
         if (cache.GetLength() == 0)
@@ -112,6 +116,7 @@ class LazySequence
         }
         return cache[0];
     }
+
     T GetLast()
     {
         if (isInfinite)
@@ -149,6 +154,7 @@ class LazySequence
         }
         return result;
     }
+
     LazySequence<T>* Append(T item)
     {
         if (isInfinite)
@@ -158,11 +164,13 @@ class LazySequence
         cache.Append(item);
         return this;
     }
+
     LazySequence<T>* Prepend(T item)
     {
         cache.Prepend(item);
         return this;
     }
+
     LazySequence<T>* InsertAt(T item, size_t index)
     {
         if (index > cache.GetLength())
@@ -172,6 +180,7 @@ class LazySequence
         cache.InsertAt(item, index);
         return this;
     }
+
     LazySequence<T>* Concat(LazySequence<T>* other)
     {
         if (other == nullptr)
@@ -187,50 +196,5 @@ class LazySequence
             cache.Append(other->cache[i]);
         }
         return this;
-    }
-    template <typename U>
-    LazySequence<U>* Map(U (*func)(T), size_t count)
-    {
-        if (func == nullptr)
-        {
-            throw NullPointer();
-        }
-        LazySequence<U>* result = new LazySequence<U>();
-        for (size_t i = 0; i < count; i++)
-        {
-            result->cache.Append(func(this->Get(i)));
-        }
-        return result;
-    }
-    LazySequence<T>* Where(bool (*pred)(T), size_t count)
-    {
-        if (pred == nullptr)
-        {
-            throw NullPointer();
-        }
-        LazySequence<T>* result = new LazySequence<T>();
-        for (size_t i = 0; i < count; i++)
-        {
-            T item = this->Get(i);
-            if (pred(item))
-            {
-                result->cache.Append(item);
-            }
-        }
-        return result;
-    }
-    template <typename U>
-    U Reduce(U (*func)(U, T), U initial, size_t count)
-    {
-        if (func == nullptr)
-        {
-            throw NullPointer();
-        }
-        U result = initial;
-        for (size_t i = 0; i < count; i++)
-        {
-            result = func(result, this->Get(i));
-        }
-        return result;
     }
 };

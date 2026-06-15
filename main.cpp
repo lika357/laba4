@@ -2,7 +2,7 @@
 
 int main()
 {
-    LikaWindow lw(1400, 950, "LAZY SEQUENCE TESTER");
+    LikaWindow lw(1600, 1000, "LAZY SEQUENCE TESTER");
     lw.run();
     return 0;
 }

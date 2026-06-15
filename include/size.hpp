@@ -28,4 +28,44 @@ class Size
     {
         return value;
     }
+
+    Size operator+(const Size& other) const
+    {
+        if (infinite || other.infinite)
+        {
+            return Infinite();
+        }
+        return Size(value + other.value);
+    }
+
+    bool operator<(const Size& other) const
+    {
+        if (other.infinite)
+        {
+            return !infinite;
+        }
+        if (infinite)
+        {
+            return false;
+        }
+        return value < other.value;
+    }
+
+    bool operator==(const Size& other) const
+    {
+        if (infinite && other.infinite)
+        {
+            return true;
+        }
+        if (!infinite && !other.infinite)
+        {
+            return value == other.value;
+        }
+        return false;
+    }
+
+    bool operator!=(const Size& other) const
+    {
+        return !(*this == other);
+    }
 };
