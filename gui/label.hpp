@@ -17,7 +17,7 @@ class Label : public Widget
         text.setFillColor(Colors::RESULT);
     }
 
-    void setPosition(float x, float y)
+    void setPosition(float x, float y) override
     {
         Widget::setPosition(x, y);
         text.setPosition({x, y});
