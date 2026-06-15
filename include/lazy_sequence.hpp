@@ -197,4 +197,49 @@ class LazySequence
         }
         return this;
     }
+     template <typename U>
+    LazySequence<U>* Map(U (*func)(T), size_t count)
+    {
+        if (func == nullptr)
+        {
+            throw NullPointer();
+        }
+        LazySequence<U>* result = new LazySequence<U>();
+        for (size_t i = 0; i < count; i++)
+        {
+            result->cache.Append(func(this->Get(i)));
+        }
+        return result;
+    }
+    LazySequence<T>* Where(bool (*pred)(T), size_t count)
+    {
+        if (pred == nullptr)
+        {
+            throw NullPointer();
+        }
+        LazySequence<T>* result = new LazySequence<T>();
+        for (size_t i = 0; i < count; i++)
+        {
+            T item = this->Get(i);
+            if (pred(item))
+            {
+                result->cache.Append(item);
+            }
+        }
+        return result;
+    }
+    template <typename U>
+    U Reduce(U (*func)(U, T), U initial, size_t count)
+    {
+        if (func == nullptr)
+        {
+            throw NullPointer();
+        }
+        U result = initial;
+        for (size_t i = 0; i < count; i++)
+        {
+            result = func(result, this->Get(i));
+        }
+        return result;
+    }
 };
