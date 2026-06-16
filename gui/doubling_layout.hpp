@@ -16,6 +16,8 @@ class DoublingLayout : public VerticalLayout
     Button dbStop{"STOP", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
     Button dbClear{"CLEAR", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
     Button dbBack{"BACK", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
+    Button dbSave{"SAVE", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
+    Button dbStats{"STATS", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
 
     DoublingLayout()
         : VerticalLayout(LayoutPositions::WORK_X, LayoutPositions::WORK_Y,
@@ -28,6 +30,8 @@ class DoublingLayout : public VerticalLayout
         buttons.append(dbStop);
         buttons.append(dbClear);
         buttons.append(dbBack);
+        buttons.append(dbSave);
+        buttons.append(dbStats);
         this->append(buttons);
     }
 };

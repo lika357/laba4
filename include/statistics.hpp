@@ -20,10 +20,12 @@ class Statistics
         }
         count++;
         sum += value;
-        if (value < min){
+        if (value < min)
+        {
             min = value;
         }
-        if (value > max){
+        if (value > max)
+        {
             max = value;
         }
     }
@@ -50,7 +52,8 @@ class Statistics
 
     double GetAverage() const
     {
-        if (count == 0){
+        if (count == 0)
+        {
             return 0;
         }
         return static_cast<double>(sum) / count;

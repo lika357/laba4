@@ -1,13 +1,10 @@
+#include "array_sequence.hpp"
 #include "assert.hpp"
 #include "generators.hpp"
 #include "lazy_sequence.hpp"
 #include "size.hpp"
 #include "stream.hpp"
 
-int doubler(const ArraySequence<int>& cache)
-{
-    return cache.GetLast() * 2;
-}
 int square(int x)
 {
     return x * x;
@@ -53,8 +50,9 @@ void test_lazy_from_sequence()
 
 void test_lazy_with_generator()
 {
+    DoubleGenerator<int>* gen = new DoubleGenerator<int>();
     int initial[] = {3};
-    LazySequence<int> lazy(doubler, initial, 1);
+    LazySequence<int> lazy(gen, initial, 1);
 
     Size size = lazy.GetLength();
     assert_func(size.IsInfinite());
@@ -96,8 +94,9 @@ void test_lazy_get_finite()
 
 void test_lazy_get_infinite()
 {
+    DoubleGenerator<int>* gen = new DoubleGenerator<int>();
     int initial[] = {3};
-    LazySequence<int> lazy(doubler, initial, 1);
+    LazySequence<int> lazy(gen, initial, 1);
 
     assert_func(lazy.Get(0) == 3);
     assert_func(lazy.Get(1) == 6);
@@ -132,8 +131,9 @@ void test_lazy_get_first_finite()
 
 void test_lazy_get_first_infinite()
 {
+    DoubleGenerator<int>* gen = new DoubleGenerator<int>();
     int initial[] = {7};
-    LazySequence<int> lazy(doubler, initial, 1);
+    LazySequence<int> lazy(gen, initial, 1);
 
     assert_func(lazy.GetFirst() == 7);
 }
@@ -162,8 +162,9 @@ void test_lazy_get_last_finite()
 
 void test_lazy_get_last_infinite()
 {
+    DoubleGenerator<int>* gen = new DoubleGenerator<int>();
     int initial[] = {5};
-    LazySequence<int> lazy(doubler, initial, 1);
+    LazySequence<int> lazy(gen, initial, 1);
 
     bool caught = false;
     try
@@ -203,8 +204,9 @@ void test_lazy_materialized_count_finite()
 
 void test_lazy_materialized_count_infinite()
 {
+    DoubleGenerator<int>* gen = new DoubleGenerator<int>();
     int initial[] = {7};
-    LazySequence<int> lazy(doubler, initial, 1);
+    LazySequence<int> lazy(gen, initial, 1);
 
     assert_func(lazy.GetMaterializedCount() == 1);
     lazy.Get(2);
@@ -225,8 +227,9 @@ void test_lazy_subsequence_finite()
 
 void test_lazy_subsequence_infinite()
 {
+    DoubleGenerator<int>* gen = new DoubleGenerator<int>();
     int initial[] = {3};
-    LazySequence<int> lazy(doubler, initial, 1);
+    LazySequence<int> lazy(gen, initial, 1);
 
     LazySequence<int>* sub = lazy.GetSubsequence(2, 4);
     assert_func(sub->GetLength().GetValue() == 3);
@@ -317,73 +320,35 @@ void test_stream_read_finite()
 {
     int items[] = {10, 20, 30};
     LazySequence<int> lazy(items, 3);
-    ReadOnlyStream<int> stream(lazy);
+    SequenceStream<int> stream(lazy);
 
-    assert_func(!stream.IsEndOfStream());
+    assert_func(!stream.IsEnd());
     assert_func(stream.Read() == 10);
     assert_func(stream.GetPosition() == 1);
 
     assert_func(stream.Read() == 20);
     assert_func(stream.Read() == 30);
-    assert_func(stream.IsEndOfStream());
 }
 
 void test_stream_read_infinite()
 {
+    DoubleGenerator<int>* gen = new DoubleGenerator<int>();
     int initial[] = {3};
-    LazySequence<int> lazy(doubler, initial, 1);
-    ReadOnlyStream<int> stream(lazy);
+    LazySequence<int> lazy(gen, initial, 1);
+    SequenceStream<int> stream(lazy);
 
-    assert_func(!stream.IsEndOfStream());
+    assert_func(!stream.IsEnd());
     assert_func(stream.Read() == 3);
     assert_func(stream.Read() == 6);
     assert_func(stream.Read() == 12);
-    assert_func(!stream.IsEndOfStream());
-}
-
-void test_stream_seek()
-{
-    int items[] = {1, 2, 3, 4, 5};
-    LazySequence<int> lazy(items, 5);
-    ReadOnlyStream<int> stream(lazy);
-
-    stream.Seek(3);
-    assert_func(stream.GetPosition() == 3);
-    assert_func(stream.Read() == 4);
-}
-
-void test_stream_close()
-{
-    int items[] = {10, 20, 30};
-    LazySequence<int> lazy(items, 3);
-    ReadOnlyStream<int> stream(lazy);
-
-    stream.Read();
-    stream.Read();
-    stream.Close();
-
-    assert_func(stream.GetPosition() == 0);
-    assert_func(stream.Read() == 10);
-}
-void test_write_stream()
-{
-    int items[] = {10, 20};
-    LazySequence<int> lazy(items, 2);
-    WriteOnlyStream<int> stream(lazy);
-
-    stream.Write(30);
-    stream.Write(40);
-
-    assert_func(stream.GetPosition() == 2);
-    assert_func(lazy.GetLength().GetValue() == 4);
-    assert_func(lazy.Get(2) == 30);
-    assert_func(lazy.Get(3) == 40);
+    assert_func(!stream.IsEnd());
 }
 
 void test_fibonacci()
 {
+    FibGenerator<int>* gen = new FibGenerator<int>();
     int initial[] = {1, 1};
-    LazySequence<int> fib(fibGenerator, initial, 2);
+    LazySequence<int> fib(gen, initial, 2);
 
     assert_func(fib.Get(0) == 1);
     assert_func(fib.Get(1) == 1);
@@ -394,8 +359,9 @@ void test_fibonacci()
 
 void test_squares()
 {
+    SquareGenerator<int>* gen = new SquareGenerator<int>();
     int initial[] = {1};
-    LazySequence<int> squares(squareGenerator, initial, 1);
+    LazySequence<int> squares(gen, initial, 1);
 
     assert_func(squares.Get(0) == 1);
     assert_func(squares.Get(1) == 4);
@@ -405,8 +371,9 @@ void test_squares()
 
 void test_doubler()
 {
+    DoubleGenerator<int>* gen = new DoubleGenerator<int>();
     int initial[] = {1};
-    LazySequence<int> doubler(doubleGenerator, initial, 1);
+    LazySequence<int> doubler(gen, initial, 1);
 
     assert_func(doubler.Get(0) == 1);
     assert_func(doubler.Get(1) == 2);
@@ -416,8 +383,9 @@ void test_doubler()
 
 void test_factorial()
 {
+    FactorialGenerator<int>* gen = new FactorialGenerator<int>();
     int initial[] = {1};
-    LazySequence<int> fact(factorialGenerator, initial, 1);
+    LazySequence<int> fact(gen, initial, 1);
 
     assert_func(fact.Get(0) == 1);
     assert_func(fact.Get(1) == 2);

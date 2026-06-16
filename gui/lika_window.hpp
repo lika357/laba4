@@ -7,8 +7,11 @@
 #include "../include/array_sequence.hpp"
 #include "../include/generators.hpp"
 #include "../include/lazy_sequence.hpp"
+#include "../include/statistics.hpp"
+#include "../include/stream.hpp"
 #include "button.hpp"
 #include "config.hpp"
+#include "custom_layout.hpp"
 #include "doubling_layout.hpp"
 #include "edit.hpp"
 #include "factorials_layout.hpp"
@@ -32,6 +35,7 @@ class LikaWindow
     Button btnSquare{"SQUARES", ButtonSizes::CHOOSE_W, ButtonSizes::CHOOSE_H};
     Button btnDouble{"DOUBLING", ButtonSizes::CHOOSE_W, ButtonSizes::CHOOSE_H};
     Button btnFact{"FACTORIALS", ButtonSizes::CHOOSE_W, ButtonSizes::CHOOSE_H};
+    Button btnCustom{"CUSTOM", ButtonSizes::CHOOSE_W, ButtonSizes::CHOOSE_H};
 
     VerticalLayout workLayout{LayoutPositions::WORK_X, LayoutPositions::WORK_Y,
                               LayoutPositions::WORK_GAP};
@@ -40,6 +44,7 @@ class LikaWindow
     std::unique_ptr<SquaresLayout> sqLayout;
     std::unique_ptr<DoublingLayout> dbLayout;
     std::unique_ptr<FactorialsLayout> fcLayout;
+    std::unique_ptr<CustomLayout> customLayout;
 
     Edit inputField;
     Label resultLabel{""};
@@ -55,16 +60,20 @@ class LikaWindow
     int inputType = 0;
     bool isAutoGenerating = false;
     int generatedCount = 0;
-
-    static constexpr size_t MAX_ELEMENTS = 160;
-    static constexpr int MAX_INDEX = 200;
+    bool overflowStarted = false;
+    int prevValue = 0;
 
     int activeGenerator = 0;
+    int customStart = 1;
+    int customStep = 1;
+    int customLimit = 100;
+    int customInputStage = 0;
+
+    Statistics<int> stats;
 
     void setupFibonacciLayout()
     {
         fibLayout = std::make_unique<FibonacciLayout>();
-
         fibLayout->fibGenerate.setOnClick(std::bind(&LikaWindow::onGenerateClick, this));
         fibLayout->fibGetIndex.setOnClick(std::bind(&LikaWindow::onGetByIndexClick, this));
         fibLayout->fibSearch.setOnClick(std::bind(&LikaWindow::onSearchClick, this));
@@ -72,12 +81,9 @@ class LikaWindow
         fibLayout->fibStop.setOnClick(std::bind(&LikaWindow::onStopClick, this));
         fibLayout->fibClear.setOnClick(std::bind(&LikaWindow::onClearClick, this));
         fibLayout->fibBack.setOnClick(std::bind(&LikaWindow::onBackClick, this));
-
-        while (workLayout.getWidgetCount() > 0)
-        {
-            workLayout.removeLast();
-        }
-
+        fibLayout->fibSave.setOnClick(std::bind(&LikaWindow::onSaveClick, this));
+        fibLayout->fibStats.setOnClick(std::bind(&LikaWindow::onStatsClick, this));
+        while (workLayout.getWidgetCount() > 0) workLayout.removeLast();
         workLayout.append(*fibLayout);
     }
 
@@ -91,10 +97,9 @@ class LikaWindow
         sqLayout->sqStop.setOnClick(std::bind(&LikaWindow::onStopClick, this));
         sqLayout->sqClear.setOnClick(std::bind(&LikaWindow::onClearClick, this));
         sqLayout->sqBack.setOnClick(std::bind(&LikaWindow::onBackClick, this));
-        while (workLayout.getWidgetCount() > 0)
-        {
-            workLayout.removeLast();
-        }
+        sqLayout->sqSave.setOnClick(std::bind(&LikaWindow::onSaveClick, this));
+        sqLayout->sqStats.setOnClick(std::bind(&LikaWindow::onStatsClick, this));
+        while (workLayout.getWidgetCount() > 0) workLayout.removeLast();
         workLayout.append(*sqLayout);
     }
 
@@ -108,10 +113,9 @@ class LikaWindow
         dbLayout->dbStop.setOnClick(std::bind(&LikaWindow::onStopClick, this));
         dbLayout->dbClear.setOnClick(std::bind(&LikaWindow::onClearClick, this));
         dbLayout->dbBack.setOnClick(std::bind(&LikaWindow::onBackClick, this));
-        while (workLayout.getWidgetCount() > 0)
-        {
-            workLayout.removeLast();
-        }
+        dbLayout->dbSave.setOnClick(std::bind(&LikaWindow::onSaveClick, this));
+        dbLayout->dbStats.setOnClick(std::bind(&LikaWindow::onStatsClick, this));
+        while (workLayout.getWidgetCount() > 0) workLayout.removeLast();
         workLayout.append(*dbLayout);
     }
 
@@ -125,11 +129,29 @@ class LikaWindow
         fcLayout->fcStop.setOnClick(std::bind(&LikaWindow::onStopClick, this));
         fcLayout->fcClear.setOnClick(std::bind(&LikaWindow::onClearClick, this));
         fcLayout->fcBack.setOnClick(std::bind(&LikaWindow::onBackClick, this));
-        while (workLayout.getWidgetCount() > 0)
-        {
-            workLayout.removeLast();
-        }
+        fcLayout->fcSave.setOnClick(std::bind(&LikaWindow::onSaveClick, this));
+        fcLayout->fcStats.setOnClick(std::bind(&LikaWindow::onStatsClick, this));
+        while (workLayout.getWidgetCount() > 0) workLayout.removeLast();
         workLayout.append(*fcLayout);
+    }
+
+    void setupCustomLayout()
+    {
+        customLayout = std::make_unique<CustomLayout>();
+        customLayout->btnStart.setOnClick(std::bind(&LikaWindow::onCustomStartClick, this));
+        customLayout->btnStep.setOnClick(std::bind(&LikaWindow::onCustomStepClick, this));
+        customLayout->btnLimit.setOnClick(std::bind(&LikaWindow::onCustomLimitClick, this));
+        customLayout->btnGenerate.setOnClick(std::bind(&LikaWindow::onGenerateClick, this));
+        customLayout->btnGetIndex.setOnClick(std::bind(&LikaWindow::onGetByIndexClick, this));
+        customLayout->btnSearch.setOnClick(std::bind(&LikaWindow::onSearchClick, this));
+        customLayout->btnAuto.setOnClick(std::bind(&LikaWindow::onAutoClick, this));
+        customLayout->btnStop.setOnClick(std::bind(&LikaWindow::onStopClick, this));
+        customLayout->btnClear.setOnClick(std::bind(&LikaWindow::onClearClick, this));
+        customLayout->btnBack.setOnClick(std::bind(&LikaWindow::onBackClick, this));
+        customLayout->btnSave.setOnClick(std::bind(&LikaWindow::onSaveClick, this));
+        customLayout->btnStats.setOnClick(std::bind(&LikaWindow::onStatsClick, this));
+        while (workLayout.getWidgetCount() > 0) workLayout.removeLast();
+        workLayout.append(*customLayout);
     }
 
     void onFibClick()
@@ -140,9 +162,9 @@ class LikaWindow
         currentGeneratorName = "Fibonacci";
         activeGenerator = 1;
         clearElements();
-
+        FibGenerator<int>* gen = new FibGenerator<int>();
         int initial[] = {1, 1};
-        lazySeq = std::make_unique<LazySequence<int>>(fibGenerator, initial, 2);
+        lazySeq = std::make_unique<LazySequence<int>>(gen, initial, 2);
         setupFibonacciLayout();
     }
 
@@ -154,9 +176,9 @@ class LikaWindow
         currentGeneratorName = "Squares";
         activeGenerator = 2;
         clearElements();
-
+        SquareGenerator<int>* gen = new SquareGenerator<int>();
         int initial[] = {1};
-        lazySeq = std::make_unique<LazySequence<int>>(squareGenerator, initial, 1);
+        lazySeq = std::make_unique<LazySequence<int>>(gen, initial, 1);
         setupSquaresLayout();
     }
 
@@ -168,9 +190,9 @@ class LikaWindow
         currentGeneratorName = "Doubling";
         activeGenerator = 3;
         clearElements();
-
+        DoubleGenerator<int>* gen = new DoubleGenerator<int>();
         int initial[] = {1};
-        lazySeq = std::make_unique<LazySequence<int>>(doubleGenerator, initial, 1);
+        lazySeq = std::make_unique<LazySequence<int>>(gen, initial, 1);
         setupDoublingLayout();
     }
 
@@ -182,17 +204,69 @@ class LikaWindow
         currentGeneratorName = "Factorials";
         activeGenerator = 4;
         clearElements();
-
+        FactorialGenerator<int>* gen = new FactorialGenerator<int>();
         int initial[] = {1};
-        lazySeq = std::make_unique<LazySequence<int>>(factorialGenerator, initial, 1);
+        lazySeq = std::make_unique<LazySequence<int>>(gen, initial, 1);
         setupFactorialsLayout();
+    }
+
+    void onCustomClick()
+    {
+        chooseLayout.setVisible(false);
+        workLayout.setVisible(true);
+        titleLabel.setText("CUSTOM");
+        currentGeneratorName = "Custom";
+        activeGenerator = 5;
+        clearElements();
+        customInputStage = 0;
+        lazySeq = nullptr;
+        setupCustomLayout();
+    }
+
+    void onCustomStartClick()
+    {
+        customInputStage = 1;
+        inputMode = true;
+        inputType = 4;
+        inputField.clear();
+        inputField.setVisible(true);
+        inputField.setFocused(true);
+        resultLabel.setVisible(false);
+    }
+    void onCustomStepClick()
+    {
+        customInputStage = 2;
+        inputMode = true;
+        inputType = 4;
+        inputField.clear();
+        inputField.setVisible(true);
+        inputField.setFocused(true);
+        resultLabel.setVisible(false);
+    }
+    void onCustomLimitClick()
+    {
+        customInputStage = 3;
+        inputMode = true;
+        inputType = 4;
+        inputField.clear();
+        inputField.setVisible(true);
+        inputField.setFocused(true);
+        resultLabel.setVisible(false);
     }
 
     void onGenerateClick()
     {
-        if (generatedCount >= MAX_ELEMENTS)
+        if (activeGenerator == 5 && lazySeq == nullptr)
         {
-            resultLabel.setText("Max elements");
+            CustomGenerator<int>* gen =
+                new CustomGenerator<int>(customStart, customStep, customLimit);
+            int initial[] = {customStart};
+            lazySeq = std::make_unique<LazySequence<int>>(gen, initial, 1);
+        }
+
+        if (activeGenerator == 5 && lazySeq && !lazySeq->HasNext())
+        {
+            resultLabel.setText("Limit ended");
             resultLabel.setVisible(true);
             return;
         }
@@ -227,9 +301,17 @@ class LikaWindow
 
     void onAutoClick()
     {
-        if (generatedCount >= MAX_ELEMENTS)
+        if (activeGenerator == 5 && lazySeq == nullptr)
         {
-            resultLabel.setText("Max elements");
+            CustomGenerator<int>* gen =
+                new CustomGenerator<int>(customStart, customStep, customLimit);
+            int initial[] = {customStart};
+            lazySeq = std::make_unique<LazySequence<int>>(gen, initial, 1);
+        }
+
+        if (activeGenerator == 5 && lazySeq && !lazySeq->HasNext())
+        {
+            resultLabel.setText("Limit ended");
             resultLabel.setVisible(true);
             return;
         }
@@ -264,19 +346,48 @@ class LikaWindow
         resultLabel.setVisible(false);
         inputMode = false;
         clearElements();
+        lazySeq = nullptr;
+        customInputStage = 0;
+    }
+
+    void onSaveClick()
+    {
+        if (generatedCount == 0)
+        {
+            resultLabel.setText("Nothing to save");
+            resultLabel.setVisible(true);
+            return;
+        }
+        FileWriteStream<int> file("output.txt");
+        for (int i = 0; i < generatedCount; i++)
+        {
+            file.Write((*lazySeq).Get(i));
+        }
+        resultLabel.setText("Saved to output.txt");
+        resultLabel.setVisible(true);
+    }
+
+    void onStatsClick()
+    {
+        std::string msg = "Count: " + std::to_string(stats.GetCount()) +
+                          "   Sum: " + std::to_string(stats.GetSum()) +
+                          "   Min: " + std::to_string(stats.GetMin()) +
+                          "   Max: " + std::to_string(stats.GetMax()) +
+                          "   Avg: " + std::to_string(stats.GetAverage()).substr(0, 6);
+        resultLabel.setText(msg);
+        resultLabel.setVisible(true);
     }
 
     std::string formatNumber(int value)
     {
         if (value < 0)
         {
-            return std::to_string(value);
+            return "oo";
         }
         if (value <= 9999)
         {
             return std::to_string(value);
         }
-
         double d = static_cast<double>(value);
         int exp = 0;
         while (d >= 1000.0)
@@ -284,21 +395,14 @@ class LikaWindow
             d /= 1000.0;
             exp++;
         }
-
         std::stringstream ss;
         ss << std::fixed << std::setprecision(1) << d;
         if (exp == 1)
-        {
             ss << "k";
-        }
         else if (exp == 2)
-        {
             ss << "M";
-        }
         else if (exp == 3)
-        {
             ss << "G";
-        }
         return ss.str();
     }
 
@@ -310,11 +414,9 @@ class LikaWindow
                 LayoutPositions::WORK_X, LayoutPositions::ELEM_Y, LayoutPositions::ELEM_GAP));
             currentRow = 0;
         }
-
         float nextX =
             LayoutPositions::WORK_X + (elementRows[currentRow]->getWidgetCount() + 1) *
                                           (ButtonSizes::ELEMENT_W + LayoutPositions::ELEM_GAP);
-
         if (nextX > Window::WIDTH - 50.0f)
         {
             float newY =
@@ -324,12 +426,50 @@ class LikaWindow
                 new HorizontalLayout(LayoutPositions::WORK_X, newY, LayoutPositions::ELEM_GAP));
             currentRow = elementRows.size() - 1;
         }
-
         Button* elem =
             new Button(formatNumber(value), ButtonSizes::ELEMENT_W, ButtonSizes::ELEMENT_H);
         elem->setColor(Colors::ELEMENT);
         elementRows[currentRow]->append(*elem);
         generatedCount++;
+        stats.Add(value);
+    }
+
+    void addOverflowElement()
+    {
+        if (elementRows.empty())
+        {
+            elementRows.push_back(new HorizontalLayout(
+                LayoutPositions::WORK_X, LayoutPositions::ELEM_Y, LayoutPositions::ELEM_GAP));
+            currentRow = 0;
+        }
+        float nextX =
+            LayoutPositions::WORK_X + (elementRows[currentRow]->getWidgetCount() + 1) *
+                                          (ButtonSizes::ELEMENT_W + LayoutPositions::ELEM_GAP);
+        if (nextX > Window::WIDTH - 50.0f)
+        {
+            float newY =
+                LayoutPositions::ELEM_Y +
+                (elementRows.size()) * (ButtonSizes::ELEMENT_H + LayoutPositions::ELEM_GAP);
+            elementRows.push_back(
+                new HorizontalLayout(LayoutPositions::WORK_X, newY, LayoutPositions::ELEM_GAP));
+            currentRow = elementRows.size() - 1;
+        }
+        Button* elem = new Button("oo", ButtonSizes::ELEMENT_W, ButtonSizes::ELEMENT_H);
+        elem->setColor(Colors::ELEMENT);
+        elementRows[currentRow]->append(*elem);
+        generatedCount++;
+    }
+    void handleCustomInput(int value)
+    {
+        if (customInputStage == 1)
+            customStart = value;
+        else if (customInputStage == 2)
+            customStep = value;
+        else if (customInputStage == 3)
+            customLimit = value;
+        customInputStage = 0;
+        resultLabel.setText("OK");
+        resultLabel.setVisible(true);
     }
 
     void handleGenerateInput(int count)
@@ -340,52 +480,35 @@ class LikaWindow
             resultLabel.setVisible(true);
             return;
         }
-
-        if (count > MAX_ELEMENTS)
-        {
-            count = MAX_ELEMENTS;
-        }
-
-        int spaceLeft = MAX_ELEMENTS - generatedCount;
-        if (count > spaceLeft)
-        {
-            count = spaceLeft;
-        }
-
-        if (count == 0)
-        {
-            resultLabel.setText("Max elements");
-            resultLabel.setVisible(true);
-            return;
-        }
-
         int startIndex = generatedCount;
         int generated = 0;
-
         for (int i = 0; i < count; i++)
         {
             int index = startIndex + i;
-
-            if (index >= MAX_INDEX)
+            if (activeGenerator == 5 && lazySeq && !lazySeq->HasNext())
             {
-                resultLabel.setText("Limit reached : Generated: " + std::to_string(generated));
+                resultLabel.setText("Limit ended");
                 resultLabel.setVisible(true);
                 return;
             }
-
+            if (overflowStarted)
+            {
+                addOverflowElement();
+                generated++;
+                continue;
+            }
             int value = (*lazySeq).Get(index);
-
-            if (index > 10 && value <= 0)
+            if (value <= 0 || (index > 2 && value < prevValue))
             {
-                resultLabel.setText("Overflow at index " + std::to_string(index));
-                resultLabel.setVisible(true);
-                return;
+                overflowStarted = true;
+                addOverflowElement();
+                generated++;
+                continue;
             }
-
+            prevValue = value;
             addElement(value);
             generated++;
         }
-
         resultLabel.setText("Generated " + std::to_string(generated) + " elements");
         resultLabel.setVisible(true);
     }
@@ -398,14 +521,6 @@ class LikaWindow
             resultLabel.setVisible(true);
             return;
         }
-
-        if (index >= MAX_INDEX)
-        {
-            resultLabel.setText("Index too large : Max: " + std::to_string(MAX_INDEX - 1));
-            resultLabel.setVisible(true);
-            return;
-        }
-
         int value = (*lazySeq).Get(index);
         resultLabel.setText("[" + std::to_string(index) + "] = " + std::to_string(value));
         resultLabel.setVisible(true);
@@ -415,33 +530,22 @@ class LikaWindow
     {
         int index = 0;
         bool found = false;
-
-        while (index < MAX_INDEX)
+        while (true)
         {
             int value = (*lazySeq).Get(index);
-
             if (value == target)
             {
                 found = true;
                 break;
             }
-
-            if (index > 10 && value <= 0)
-            {
-                break;
-            }
+            if (value <= 0) break;
             index++;
         }
-
         if (found)
-        {
             resultLabel.setText("Found " + std::to_string(target) + " at [" +
                                 std::to_string(index) + "]");
-        }
         else
-        {
             resultLabel.setText(std::to_string(target) + " not found");
-        }
         resultLabel.setVisible(true);
     }
 
@@ -451,11 +555,8 @@ class LikaWindow
         window.create(
             sf::VideoMode({static_cast<unsigned int>(width), static_cast<unsigned int>(height)}),
             title);
-
         if (!font.openFromFile("arial.ttf")) throw std::runtime_error("Failed NOT open");
-
         Widget::getDefaultFont() = font;
-
         titleLabel.setPosition(ElementPositions::TITLE_X, ElementPositions::TITLE_Y);
         inputField.setPosition(ElementPositions::INPUT_X, ElementPositions::INPUT_Y);
         resultLabel.setPosition(ElementPositions::RESULT_X, ElementPositions::RESULT_Y);
@@ -466,11 +567,13 @@ class LikaWindow
         chooseLayout.append(btnSquare);
         chooseLayout.append(btnDouble);
         chooseLayout.append(btnFact);
+        chooseLayout.append(btnCustom);
 
         btnFib.setOnClick(std::bind(&LikaWindow::onFibClick, this));
         btnSquare.setOnClick(std::bind(&LikaWindow::onSquareClick, this));
         btnDouble.setOnClick(std::bind(&LikaWindow::onDoubleClick, this));
         btnFact.setOnClick(std::bind(&LikaWindow::onFactClick, this));
+        btnCustom.setOnClick(std::bind(&LikaWindow::onCustomClick, this));
 
         workLayout.setVisible(false);
     }
@@ -485,32 +588,44 @@ class LikaWindow
         elementRows.clear();
         currentRow = 0;
         generatedCount = 0;
+        overflowStarted = false;
+        prevValue = 0;
+        stats.Reset();
     }
 
     void run()
     {
         sf::Clock autoClock;
-
         while (window.isOpen())
         {
-            if (isAutoGenerating && lazySeq && generatedCount < MAX_ELEMENTS &&
-                generatedCount < MAX_INDEX)
+            if (isAutoGenerating && lazySeq)
             {
                 if (autoClock.getElapsedTime().asSeconds() > 0.5f)
                 {
                     autoClock.restart();
-
-                    int value = (*lazySeq).Get(generatedCount);
-
-                    if (generatedCount > 10 && value <= 0)
+                    if (activeGenerator == 5 && !lazySeq->HasNext())
                     {
                         isAutoGenerating = false;
-                        resultLabel.setText("Overflow : " + std::to_string(generatedCount));
+                        resultLabel.setText("Limit ended");
                         resultLabel.setVisible(true);
+                    }
+                    else if (overflowStarted)
+                    {
+                        addOverflowElement();
                     }
                     else
                     {
-                        addElement(value);
+                        int value = (*lazySeq).Get(generatedCount);
+                        if (value <= 0 || (generatedCount > 2 && value < prevValue))
+                        {
+                            overflowStarted = true;
+                            addOverflowElement();
+                        }
+                        else
+                        {
+                            prevValue = value;
+                            addElement(value);
+                        }
                     }
                 }
             }
@@ -518,15 +633,10 @@ class LikaWindow
             while (auto event = window.pollEvent())
             {
                 if (event->is<sf::Event::Closed>()) window.close();
-
                 bool handled = false;
-
                 if (inputField.isVisible()) handled = inputField.handleEvent(*event);
-
                 if (!handled && chooseLayout.handleEvent(*event)) handled = true;
-
                 if (!handled && workLayout.handleEvent(*event)) handled = true;
-
                 for (auto* row : elementRows)
                 {
                     if (row->handleEvent(*event))
@@ -543,7 +653,9 @@ class LikaWindow
                     inputField.setVisible(false);
                     inputMode = false;
 
-                    if (inputType == 1)
+                    if (inputType == 4)
+                        handleCustomInput(value);
+                    else if (inputType == 1)
                         handleGenerateInput(value);
                     else if (inputType == 2)
                         handleGetByIndex(value);
@@ -558,12 +670,9 @@ class LikaWindow
             titleLabel.draw(window);
             chooseLayout.draw(window);
             workLayout.draw(window);
-
             for (auto* row : elementRows) row->draw(window);
-
             if (inputField.isVisible()) inputField.draw(window);
             if (resultLabel.isVisible()) resultLabel.draw(window);
-
             window.display();
         }
     }

@@ -16,6 +16,8 @@ class SquaresLayout : public VerticalLayout
     Button sqStop{"STOP", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
     Button sqClear{"CLEAR", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
     Button sqBack{"BACK", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
+    Button sqSave{"SAVE", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
+    Button sqStats{"STATS", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
 
     SquaresLayout()
         : VerticalLayout(LayoutPositions::WORK_X, LayoutPositions::WORK_Y,
@@ -28,6 +30,8 @@ class SquaresLayout : public VerticalLayout
         buttons.append(sqStop);
         buttons.append(sqClear);
         buttons.append(sqBack);
+        buttons.append(sqSave);
+        buttons.append(sqStats);
         this->append(buttons);
     }
 };

@@ -1,13 +1,14 @@
 #pragma once
 #include <cstddef>
-#include <fstream>
+#include <cstdio>
 #include <string>
+
 #include "lazy_sequence.hpp"
 
 template <typename T>
 class Stream
 {
-public:
+   public:
     virtual ~Stream() = default;
     virtual T Read() = 0;
     virtual bool IsEnd() const = 0;
@@ -17,11 +18,11 @@ public:
 template <typename T>
 class SequenceStream : public Stream<T>
 {
-private:
+   private:
     LazySequence<T>& source;
     size_t position = 0;
 
-public:
+   public:
     SequenceStream(LazySequence<T>& seq) : source(seq)
     {
     }
@@ -47,20 +48,27 @@ public:
 template <typename T>
 class FileStream : public Stream<T>
 {
-private:
-    std::ifstream file;
+   private:
+    FILE* file;
     size_t position = 0;
 
-public:
+   public:
     FileStream(const std::string& filename)
     {
-        file.open(filename);
+        file = fopen(filename.c_str(), "r");
+    }
+    ~FileStream()
+    {
+        if (file)
+        {
+            fclose(file);
+        }
     }
 
     T Read() override
     {
         T value;
-        if (file >> value)
+        if (fscanf(file, "%d", &value) == 1)
         {
             position++;
             return value;
@@ -70,7 +78,7 @@ public:
 
     bool IsEnd() const override
     {
-        return file.eof();
+        return feof(file);
     }
 
     size_t GetPosition() const override
@@ -82,19 +90,27 @@ public:
 template <typename T>
 class FileWriteStream
 {
-private:
-    std::ofstream file;
+   private:
+    FILE* file;
     size_t position = 0;
 
-public:
+   public:
     FileWriteStream(const std::string& filename)
     {
-        file.open(filename);
+        file = fopen(filename.c_str(), "w");
+    }
+
+    ~FileWriteStream()
+    {
+        if (file)
+        {
+            fclose(file);
+        }
     }
 
     void Write(const T& value)
     {
-        file << value << " ";
+        fprintf(file, "%d ", value);
         position++;
     }
 

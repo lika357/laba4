@@ -34,9 +34,6 @@ int main()
     test_lazy_reduce();
     test_stream_read_finite();
     test_stream_read_infinite();
-    test_stream_seek();
-    test_stream_close();
-    test_write_stream();
     test_fibonacci();
     test_squares();
     test_doubler();

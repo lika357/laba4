@@ -16,6 +16,8 @@ class FactorialsLayout : public VerticalLayout
     Button fcStop{"STOP", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
     Button fcClear{"CLEAR", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
     Button fcBack{"BACK", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
+    Button fcSave{"SAVE", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
+    Button fcStats{"STATS", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
 
     FactorialsLayout()
         : VerticalLayout(LayoutPositions::WORK_X, LayoutPositions::WORK_Y,
@@ -28,6 +30,8 @@ class FactorialsLayout : public VerticalLayout
         buttons.append(fcStop);
         buttons.append(fcClear);
         buttons.append(fcBack);
+        buttons.append(fcSave);
+        buttons.append(fcStats);
         this->append(buttons);
     }
 };

@@ -1,7 +1,9 @@
 #pragma once
 #include <exception>
+#include <sstream>
 #include <string>
-#include <sstream>   
+
+std::string FormatIndexError(size_t index, size_t size);
 
 class Exceptions : public std::exception
 {
@@ -18,19 +20,10 @@ class Exceptions : public std::exception
     }
 };
 
-inline std::string FormatIndexError(size_t index, size_t size)
-{
-    std::ostringstream ss;                                    
-    ss << "Ошибка : индекс " << index                         
-       << " вышел за границы " << size;                      
-    return ss.str();                                           
-}
-
 class IndexOutOfRange : public Exceptions
 {
    public:
-    IndexOutOfRange(size_t index = 0, size_t size = 0)
-        : Exceptions{FormatIndexError(index, size)}
+    IndexOutOfRange(size_t index = 0, size_t size = 0) : Exceptions{FormatIndexError(index, size)}
     {
     }
 };

@@ -16,6 +16,8 @@ class FibonacciLayout : public VerticalLayout
     Button fibStop{"STOP", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
     Button fibClear{"CLEAR", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
     Button fibBack{"BACK", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
+    Button fibSave{"SAVE", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
+    Button fibStats{"STATS", ButtonSizes::STACK_W, ButtonSizes::STACK_H};
 
     FibonacciLayout()
         : VerticalLayout(LayoutPositions::WORK_X, LayoutPositions::WORK_Y,
@@ -28,6 +30,8 @@ class FibonacciLayout : public VerticalLayout
         buttons.append(fibStop);
         buttons.append(fibClear);
         buttons.append(fibBack);
+        buttons.append(fibSave);
+        buttons.append(fibStats);
         this->append(buttons);
     }
 };

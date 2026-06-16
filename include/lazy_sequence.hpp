@@ -1,4 +1,5 @@
 #pragma once
+
 #include "exceptions.hpp"
 #include "igenerator.hpp"
 #include "sequence.hpp"
@@ -26,7 +27,7 @@ class LazySequence
 
         for (size_t i = cache.GetLength(); i <= index; i++)
         {
-            T next = generator->GetNext(cache);
+            T next = generator->GetNext();
             cache.Append(next);
         }
     }
@@ -59,6 +60,7 @@ class LazySequence
             cache.Append(seq->Get(i));
         }
     }
+
     LazySequence(IGenerator<T>* gen, T* initialItems, size_t initialCount)
         : generator(gen), isInfinite(true)
     {
@@ -70,6 +72,9 @@ class LazySequence
         {
             throw InvalidArgument();
         }
+
+        generator->SetCache(&cache);
+
         for (size_t i = 0; i < initialCount; i++)
         {
             cache.Append(initialItems[i]);
@@ -197,7 +202,8 @@ class LazySequence
         }
         return this;
     }
-     template <typename U>
+
+    template <typename U>
     LazySequence<U>* Map(U (*func)(T), size_t count)
     {
         if (func == nullptr)
@@ -211,6 +217,7 @@ class LazySequence
         }
         return result;
     }
+
     LazySequence<T>* Where(bool (*pred)(T), size_t count)
     {
         if (pred == nullptr)
@@ -228,6 +235,7 @@ class LazySequence
         }
         return result;
     }
+
     template <typename U>
     U Reduce(U (*func)(U, T), U initial, size_t count)
     {
@@ -241,5 +249,12 @@ class LazySequence
             result = func(result, this->Get(i));
         }
         return result;
+    }
+    bool HasNext()
+    {
+        if (generator == nullptr) {
+            return false;
+        }
+        return generator->HasNext();
     }
 };

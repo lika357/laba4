@@ -1,4 +1,6 @@
 #pragma once
+
+#include "config.hpp"
 #include "layout.hpp"
 #include "widget.hpp"
 
@@ -22,6 +24,14 @@ class HorizontalLayout : public Layout
         {
             Widget* last = widgets.GetLast();
             currentX = last->getPosition().x + last->getSize().x + gap;
+        }
+
+        float nextX = currentX + widget.getSize().x;
+        if (nextX > Window::WIDTH - 50.0f)
+        {
+            float newY = startY + (widget.getSize().y + gap);
+            currentX = startX;
+            startY = newY;
         }
 
         widget.setPosition(currentX, startY);

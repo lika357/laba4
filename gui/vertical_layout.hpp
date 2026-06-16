@@ -1,4 +1,6 @@
 #pragma once
+
+#include "config.hpp"
 #include "layout.hpp"
 
 class VerticalLayout : public Layout
@@ -21,10 +23,19 @@ class VerticalLayout : public Layout
             currentY = last->getPosition().y + last->getSize().y + gap;
         }
 
+        float nextY = currentY + widget.getSize().y;
+        if (nextY > Window::HEIGHT - 100.0f)
+        {
+            float newX = startX + (widget.getSize().x + gap);
+            currentY = startY;
+            startX = newX;
+        }
+
         widget.setPosition(startX, currentY);
         widgets.Append(&widget);
         return *this;
     }
+
     Layout& prepend(Widget& widget) override
     {
         float shift = widget.getSize().y + gap;

@@ -51,4 +51,3 @@ class Widget
         return visible;
     }
 };
-inline sf::Font Widget::defaultFont;
