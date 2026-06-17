@@ -6,6 +6,7 @@
 
 #include "exceptions.hpp"
 #include "lazy_sequence.hpp"
+#include "serializer.hpp"  
 
 template <typename T>
 class Stream
@@ -65,10 +66,12 @@ class FileReadStream : public ReadStream<T>
 {
    private:
     FILE* file;
+    Serializer<T>* serializer;
     size_t position = 0;
 
    public:
-    FileReadStream(const std::string& filename)
+    FileReadStream(const std::string& filename, Serializer<T>* ser)
+        : serializer(ser)
     {
         file = fopen(filename.c_str(), "r");
     }
@@ -83,11 +86,11 @@ class FileReadStream : public ReadStream<T>
 
     T Read() override
     {
-        T value;
-        if (fscanf(file, "%d", &value) == 1)
+        char buffer[256];
+        if (fscanf(file, "%s", buffer) == 1)
         {
             position++;
-            return value;
+            return serializer->Deserialize(buffer);
         }
         throw EndOfStream();
     }
@@ -108,10 +111,12 @@ class FileWriteStream : public WriteStream<T>
 {
    private:
     FILE* file;
+    Serializer<T>* serializer; 
     size_t position = 0;
 
    public:
-    FileWriteStream(const std::string& filename)
+    FileWriteStream(const std::string& filename, Serializer<T>* ser)
+        : serializer(ser)
     {
         file = fopen(filename.c_str(), "w");
     }
@@ -126,7 +131,8 @@ class FileWriteStream : public WriteStream<T>
 
     void Write(const T& value) override
     {
-        fprintf(file, "%d ", value);
+        std::string text = serializer->Serialize(value);
+        fprintf(file, "%s ", text.c_str());
         position++;
     }
 
