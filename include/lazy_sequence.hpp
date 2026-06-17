@@ -252,7 +252,8 @@ class LazySequence
     }
     bool HasNext()
     {
-        if (generator == nullptr) {
+        if (generator == nullptr)
+        {
             return false;
         }
         return generator->HasNext();

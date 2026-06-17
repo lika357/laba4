@@ -1,4 +1,5 @@
 #pragma once
+
 #include <exception>
 #include <sstream>
 #include <string>
@@ -40,6 +41,14 @@ class NullPointer : public Exceptions
 {
    public:
     NullPointer() : Exceptions{"Ошибка : передан пустой указатель"}
+    {
+    }
+};
+
+class EndOfStream : public Exceptions
+{
+   public:
+    EndOfStream() : Exceptions{"Ошибка : достигнут конец потока"}
     {
     }
 };
