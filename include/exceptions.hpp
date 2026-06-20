@@ -52,3 +52,17 @@ class EndOfStream : public Exceptions
     {
     }
 };
+class FileOpenError : public Exceptions
+{
+   public:
+    FileOpenError() : Exceptions{"Ошибка : не удалось открыть файл"}
+    {
+    }
+};
+class FileWriteError : public Exceptions
+{
+   public:
+    FileWriteError() : Exceptions{"Ошибка : не удалось записать в файл"}
+    {
+    }
+};

@@ -1,7 +1,9 @@
 #include "array_sequence.hpp"
 #include "assert.hpp"
+#include "exceptions.hpp"
 #include "generators.hpp"
 #include "lazy_sequence.hpp"
+#include "serializer.hpp"
 #include "size.hpp"
 #include "stream.hpp"
 
@@ -392,4 +394,98 @@ void test_factorial()
     assert_func(fact.Get(2) == 6);
     assert_func(fact.Get(3) == 24);
     assert_func(fact.GetLength().IsInfinite());
+}
+
+void test_file_write_read()
+{
+    {
+        FileWriteStream<int> writer("test_file.txt");
+        writer.Write(10);
+        writer.Write(20);
+        writer.Write(30);
+    }
+
+    FileReadStream<int> reader("test_file.txt");
+
+    assert_func(reader.Read() == 10);
+    assert_func(reader.Read() == 20);
+    assert_func(reader.Read() == 30);
+
+    remove("test_file.txt");
+}
+
+void test_file_open_error()
+{
+    bool caught = false;
+    try
+    {
+        FileReadStream<int> reader("file.txt");
+    }
+    catch (const FileOpenError&)
+    {
+        caught = true;
+    }
+    assert_func(caught);
+}
+
+void test_file_write_position()
+{
+    FileWriteStream<int> writer("test_pos.txt");
+
+    assert_func(writer.GetPosition() == 0);
+    writer.Write(100);
+    assert_func(writer.GetPosition() == 1);
+    writer.Write(200);
+    assert_func(writer.GetPosition() == 2);
+
+    remove("test_pos.txt");
+}
+
+void test_file_read_position()
+{
+    {
+        FileWriteStream<int> writer("test_read_pos.txt");
+        writer.Write(1);
+        writer.Write(2);
+    }
+
+    FileReadStream<int> reader("test_read_pos.txt");
+
+    assert_func(reader.GetPosition() == 0);
+    reader.Read();
+    assert_func(reader.GetPosition() == 1);
+    reader.Read();
+    assert_func(reader.GetPosition() == 2);
+
+    remove("test_read_pos.txt");
+}
+
+void test_file_read_with_serializer()
+{
+    IntSerializer intSer;
+    {
+        FileWriteStream<int> writer("test_ser.txt", &intSer);
+        writer.Write(42);
+        writer.Write(99);
+    }
+
+    FileReadStream<int> reader("test_ser.txt", &intSer);
+
+    assert_func(reader.Read() == 42);
+    assert_func(reader.Read() == 99);
+
+    remove("test_ser.txt");
+}
+void test_file_write_default_serializer()
+{
+    {
+        FileWriteStream<int> writer("test_default.txt");
+        writer.Write(7);
+    }
+
+    FileReadStream<int> reader("test_default.txt");
+
+    assert_func(reader.Read() == 7);
+
+    remove("test_default.txt");
 }

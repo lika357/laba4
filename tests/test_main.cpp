@@ -38,6 +38,12 @@ int main()
     test_squares();
     test_doubler();
     test_factorial();
+    test_file_write_read();
+    test_file_open_error();
+    test_file_write_position();
+    test_file_read_position();
+    test_file_read_with_serializer();
+    test_file_write_default_serializer();
 
     std::cout << "true " << get_true_tests() << "\n";
     std::cout << "false " << get_failed_tests() << "\n";

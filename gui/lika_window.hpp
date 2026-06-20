@@ -7,7 +7,7 @@
 #include "../include/array_sequence.hpp"
 #include "../include/generators.hpp"
 #include "../include/lazy_sequence.hpp"
-#include "../include/serializer.hpp"  
+#include "../include/serializer.hpp"
 #include "../include/statistics.hpp"
 #include "../include/stream.hpp"
 #include "button.hpp"
@@ -359,8 +359,8 @@ class LikaWindow
             resultLabel.setVisible(true);
             return;
         }
-        IntSerializer intSer; 
-        FileWriteStream<int> file("output.txt", &intSer);  
+        IntSerializer intSer;
+        FileWriteStream<int> file("output.txt", &intSer);
         for (int i = 0; i < generatedCount; i++)
         {
             file.Write((*lazySeq).Get(i));
